@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reynolds County Residential | Custom Woodwork & Remodeling in Black, Missouri</title>
+    <meta
+      name="description"
+      content="Reynolds County Residential, owned by Tony Nawrocki, provides custom woodwork, remodeling, and home improvement services in Black, Missouri and surrounding counties." />
+    <meta property="og:title" content="Reynolds County Residential" />
+    <meta property="og:description" content="Custom woodwork, remodeling, and residential improvement services in Reynolds County and surrounding Missouri counties." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./social-preview.svg" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      .preview-gate {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: radial-gradient(circle at top, rgba(47,212,255,.12), transparent 30%), rgba(7,11,18,.82);
+        backdrop-filter: blur(14px);
+      }
+      .preview-gate.hidden { display: none; }
+      .preview-card {
+        width: min(100%, 440px);
+        padding: 28px;
+        border-radius: 24px;
+        background: rgba(255,255,255,.96);
+        border: 1px solid rgba(148,163,184,.24);
+        box-shadow: 0 24px 80px rgba(2,8,23,.28);
+        color: #0f172a;
+      }
+      .preview-card h2 {
+        margin: 10px 0 10px;
+        font-size: 1.6rem;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+      }
+      .preview-card p {
+        margin: 0 0 14px;
+        color: #475569;
+        font-size: .98rem;
+        line-height: 1.55;
+      }
+      .preview-badge {
+        display: inline-flex;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: rgba(15,23,42,.06);
+        color: #334155;
+        font-size: .74rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      .preview-form {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .preview-form input {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(148,163,184,.34);
+        font: inherit;
+      }
+      .preview-form button {
+        min-height: 48px;
+        border: 0;
+        border-radius: 999px;
+        font: inherit;
+        font-weight: 700;
+        color: #07111d;
+        background: linear-gradient(135deg, #2FD4FF, #67ddff);
+        cursor: pointer;
+      }
+      .preview-error {
+        min-height: 20px;
+        color: #b91c1c;
+        font-size: .9rem;
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HomeAndConstructionBusiness",
+        "name": "Reynolds County Residential",
+        "url": "https://example.com",
+        "email": "mailto:AKnawrocki@gmail.com",
+        "telephone": "+1-573-453-8248",
+        "founder": "Tony Nawrocki",
+        "sameAs": ["https://www.facebook.com/profile.php?id=61579565171757"],
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Black",
+          "addressRegion": "MO",
+          "addressCountry": "US"
+        },
+        "areaServed": "Reynolds County and surrounding counties in Missouri",
+        "description": "Custom woodwork, residential remodeling, and home improvement focused on craftsmanship, reliability, and clean finished results."
+      }
+    </script>
+  </head>
+  <body>
+    <div class="preview-gate" id="previewGate">
+      <div class="preview-card">
+        <div class="preview-badge">Private client preview</div>
+        <h2>Reynolds County Residential</h2>
+        <p>Preview website for Tony Nawrocki. Enter the password below to continue.</p>
+        <form class="preview-form" id="previewForm">
+          <input id="previewPassword" type="password" placeholder="Enter password" autocomplete="current-password" />
+          <button type="submit">View preview</button>
+          <div class="preview-error" id="previewError"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="#home" aria-label="Reynolds County Residential home">
+          <span class="brand-mark">RCR</span>
+          <span class="brand-text">
+            <strong>Reynolds County Residential</strong>
+            <small>Custom Woodwork • Remodeling • Home Improvement</small>
+          </span>
+        </a>
+
+        <nav class="nav">
+          <a href="#services">Services</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <a class="button button-ghost" href="tel:5734538248">Call Tony</a>
+      </header>
+
+      <main id="home">
+        <section class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow">Black, Missouri • Reynolds County area</div>
+            <h1>Custom woodwork and remodeling done right.</h1>
+            <p class="hero-text">
+              <span class="hero-text-desktop">Tony Nawrocki helps homeowners with custom woodwork, finish carpentry, remodeling, and practical home upgrades that make a home look sharper, feel better, and function the way it should.</span>
+              <span class="hero-text-mobile">Custom woodwork, remodeling, and finish-focused upgrades built with pride and local craftsmanship.</span>
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="tel:5734538248">Call 573-453-8248</a>
+              <a class="button button-secondary" href="#gallery">See recent work</a>
+            </div>
+
+            <ul class="hero-points">
+              <li>Custom woodwork</li>
+              <li>Finish carpentry</li>
+              <li>Remodeling & upgrades</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual">
+            <div class="hero-photo-frame">
+              <img src="./assets/653804131_122100838604985505_8624346670204219199_n.jpg" alt="Custom woodwork project by Reynolds County Residential" />
+            </div>
+            <div class="hero-floating-card">
+              <span class="mini-label dark-label">Owner</span>
+              <strong>Tony Nawrocki</strong>
+              <p>Serving Reynolds County and surrounding counties in Missouri.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="services">
+          <div class="section-heading compact-heading">
+            <div class="eyebrow">Services</div>
+            <h2>Quality work for homeowners who care about the details.</h2>
+          </div>
+
+          <div class="card-grid three-up">
+            <article class="service-card">
+              <div class="service-icon">W</div>
+              <h3>Custom woodwork</h3>
+              <p>Built-ins, trim, accent walls, custom details, and wood features that give a home a more finished, custom feel.</p>
+            </article>
+            <article class="service-card">
+              <div class="service-icon">F</div>
+              <h3>Finish carpentry</h3>
+              <p>Doors, trim, detail work, and final touches that sharpen the look of a room and make the work feel complete.</p>
+            </article>
+            <article class="service-card">
+              <div class="service-icon">R</div>
+              <h3>Remodeling & improvements</h3>
+              <p>Interior updates, room improvements, and practical residential projects that improve how a space looks and works.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="gallery">
+          <div class="section-heading compact-heading">
+            <div class="eyebrow">Recent Work</div>
+            <h2>Real projects. Real craftsmanship.</h2>
+          </div>
+
+          <div class="gallery-grid real-gallery">
+            <article class="gallery-tile gallery-tall real-photo">
+              <img src="./assets/653804131_122100838604985505_8624346670204219199_n.jpg" alt="Custom woodwork feature project by Reynolds County Residential" />
+            </article>
+            <article class="gallery-tile real-photo">
+              <img src="./assets/655758688_122101334756985505_4512927800827959694_n.jpg" alt="Detailed residential woodwork project" />
+            </article>
+            <article class="gallery-tile real-photo">
+              <img src="./assets/656027895_122101334768985505_2099836635813182622_n.jpg" alt="Interior remodeling detail by Reynolds County Residential" />
+            </article>
+            <article class="gallery-tile wide real-photo">
+              <img src="./assets/561641514_1467593614498660_1063365284484056006_n.jpg" alt="Residential project work by Tony Nawrocki" />
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="contact">
+          <div class="contact-shell single-focus-contact">
+            <div class="contact-info">
+              <div class="eyebrow">Contact</div>
+              <h2>Talk to Tony about your project.</h2>
+              <p>
+                For custom woodwork, finish carpentry, remodeling, and home improvement work in Black, Missouri and the surrounding area, reach out directly.
+              </p>
+              <ul class="contact-points">
+                <li><strong>Owner:</strong> Tony Nawrocki</li>
+                <li><strong>Phone:</strong> <a href="tel:5734538248">573-453-8248</a></li>
+                <li><strong>Email:</strong> <a href="mailto:AKnawrocki@gmail.com">AKnawrocki@gmail.com</a></li>
+                <li><strong>Location:</strong> Black, MO</li>
+                <li><strong>Service area:</strong> Reynolds County and surrounding Missouri counties</li>
+              </ul>
+            </div>
+
+            <div class="contact-form-card quick-contact-card">
+              <p class="mini-label dark-label">Fastest ways to reach him</p>
+              <div class="contact-actions contact-stack">
+                <a class="button button-primary" href="tel:5734538248">Call / Text Tony</a>
+                <a class="button button-secondary" href="mailto:AKnawrocki@gmail.com">Send Email</a>
+                <a class="button button-secondary" href="https://www.facebook.com/profile.php?id=61579565171757" target="_blank" rel="noreferrer">Message on Facebook</a>
+              </div>
+              <p class="fine-print">Lightly protected preview hosted under RipCurrent Works.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <a class="mobile-callbar" href="tel:5734538248" aria-label="Call Tony Nawrocki">
+        <span class="mobile-callbar-label">Call Tony</span>
+        <strong>573-453-8248</strong>
+      </a>
+    </div>
+
+    <script>
+      (() => {
+        const PASSWORD = 'bones';
+        const STORAGE_KEY = 'rcr-preview-unlocked';
+        const gate = document.getElementById('previewGate');
+        const form = document.getElementById('previewForm');
+        const input = document.getElementById('previewPassword');
+        const error = document.getElementById('previewError');
+
+        function unlock() {
+          sessionStorage.setItem(STORAGE_KEY, 'yes');
+          gate.classList.add('hidden');
+        }
+
+        if (sessionStorage.getItem(STORAGE_KEY) === 'yes') {
+          gate.classList.add('hidden');
+          return;
+        }
+
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (input.value === PASSWORD) {
+            unlock();
+          } else {
+            error.textContent = 'Incorrect password.';
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

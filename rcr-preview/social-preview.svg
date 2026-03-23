@@ -1,0 +1,25 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" rx="32" fill="#0F172A"/>
+  <circle cx="968" cy="116" r="220" fill="url(#paint0_radial)" fill-opacity="0.65"/>
+  <circle cx="182" cy="574" r="260" fill="url(#paint1_radial)" fill-opacity="0.55"/>
+  <rect x="72" y="84" width="150" height="150" rx="32" fill="url(#paint2_linear)"/>
+  <path d="M123.152 183V128.455H145.176C150.478 128.455 154.909 129.33 158.47 131.08C162.03 132.83 164.712 135.341 166.515 138.614C168.348 141.886 169.265 145.788 169.265 150.318C169.265 154.879 168.333 158.795 166.47 162.068C164.637 165.341 161.909 167.841 158.288 169.568C154.697 171.295 150.243 172.159 144.925 172.159H130.515V161.545H142.63C145.661 161.545 148.114 161.129 149.992 160.295C151.871 159.462 153.242 158.212 154.106 156.545C154.992 154.879 155.436 152.803 155.436 150.318C155.436 147.833 154.992 145.773 154.106 144.136C153.242 142.47 151.871 141.235 149.992 140.432C148.091 139.598 145.615 139.182 142.561 139.182H136.889V183H123.152ZM157.606 158.159L171.178 183H156.061L142.832 158.159H157.606Z" fill="#111827"/>
+  <path d="M184.311 183V128.455H206.335C211.637 128.455 216.068 129.33 219.629 131.08C223.19 132.83 225.871 135.341 227.675 138.614C229.508 141.886 230.424 145.788 230.424 150.318C230.424 154.879 229.493 158.795 227.629 162.068C225.796 165.341 223.068 167.841 219.447 169.568C215.857 171.295 211.402 172.159 206.085 172.159H191.674V161.545H203.789C206.82 161.545 209.274 161.129 211.152 160.295C213.031 159.462 214.401 158.212 215.265 156.545C216.152 154.879 216.595 152.803 216.595 150.318C216.595 147.833 216.152 145.773 215.265 144.136C214.401 142.47 213.031 141.235 211.152 140.432C209.251 139.598 206.775 139.182 203.72 139.182H198.048V183H184.311ZM218.765 158.159L232.337 183H217.22L203.992 158.159H218.765Z" fill="#111827"/>
+  <text x="72" y="344" fill="white" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="800">Reynolds County</text>
+  <text x="72" y="424" fill="#E2E8F0" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="700">Residential</text>
+  <text x="72" y="492" fill="#CBD5E1" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="500">Professional remodeling & home improvement</text>
+  <defs>
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(968 116) rotate(90) scale(220)">
+      <stop stop-color="#D4A84F"/>
+      <stop offset="1" stop-color="#D4A84F" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="paint1_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(182 574) rotate(90) scale(260)">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#2563EB" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="paint2_linear" x1="72" y1="84" x2="222" y2="234" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D4A84F"/>
+      <stop offset="1" stop-color="#B98C35"/>
+    </linearGradient>
+  </defs>
+</svg>
