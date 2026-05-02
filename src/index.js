@@ -3,7 +3,13 @@ const AASA = JSON.stringify({
     details: [
       {
         appIDs: ["FDT7YQMSWR.com.bob.TripButler"],
-        components: [{ "/": "/*" }]
+        components: [
+          { "/": "/rcr-preview", exclude: true },
+          { "/": "/rcr-preview/*", exclude: true },
+          { "/": "/invite" },
+          { "/": "/invite/*" },
+          { "/": "/auth/callback" }
+        ]
       }
     ]
   }
