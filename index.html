@@ -92,6 +92,67 @@
       color: var(--text-muted);
       max-width: 720px;
     }
+    .section {
+      margin-top: 34px;
+    }
+    .section h2 {
+      margin: 0 0 18px;
+      font-size: 24px;
+      letter-spacing: -.02em;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .product-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.03);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(0,0,0,.26);
+      border-color: rgba(47,212,255,.28);
+    }
+    .product-name {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .product-tagline {
+      margin: 0 0 14px;
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+    .product-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .product-card li + li { margin-top: 8px; }
+    .product-note {
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .cta {
+      margin-top: 24px;
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+    .cta a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .cta a:hover { text-decoration: underline; }
     .footer {
       margin-top: 42px;
       padding-top: 18px;
@@ -122,10 +183,41 @@
 
     <div class="eyebrow">RipCurrent Works</div>
     <h1>Practical software for everyday life.</h1>
-    <p>
-      RipCurrent Works builds practical software that helps people navigate everyday life a little better.
-      More coming soon.
-    </p>
+
+    <div class="section">
+      <h2>Our Products</h2>
+      <div class="products">
+        <article class="product-card">
+          <h3 class="product-name">BiteIQ</h3>
+          <p class="product-tagline">Smarter fishing, powered by data</p>
+          <ul>
+            <li>Track catches, trips, and conditions</li>
+            <li>AI-powered fish identification</li>
+            <li>Community heat maps without exposing exact locations</li>
+          </ul>
+        </article>
+        <article class="product-card">
+          <h3 class="product-name">TripButler</h3>
+          <p class="product-tagline">Travel planning that adapts to you</p>
+          <ul>
+            <li>Dynamic “Today” view for each trip</li>
+            <li>Personalized recommendations</li>
+            <li>Collaborative planning with invites</li>
+          </ul>
+        </article>
+        <article class="product-card">
+          <h3 class="product-name">FunctionIQ</h3>
+          <p class="product-tagline">Private event operations, from inquiry to execution</p>
+          <ul>
+            <li>Capture and manage event inquiries</li>
+            <li>Track pipeline from inquiry to booking</li>
+            <li>Store event details, notes, and execution sheets</li>
+          </ul>
+          <div class="product-note">Built for restaurants, venues, and event-driven businesses</div>
+        </article>
+      </div>
+      <div class="cta">Interested in FunctionIQ? <a href="mailto:bob.com">Let’s talk.</a></div>
+    </div>
 
     <div class="footer">
       <span>Built to be useful. <a href="/privacy/">Privacy</a></span>

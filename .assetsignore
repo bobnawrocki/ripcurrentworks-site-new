@@ -1,0 +1,17 @@
+.git
+.git/**
+.gitignore
+.wrangler
+.wrangler/**
+.DS_Store
+
+src
+src/**
+node_modules
+node_modules/**
+
+README.md
+wrangler.toml
+.assetsignore
+package.json
+package-lock.json

@@ -1,0 +1,9 @@
+name = "ripcurrentworks-static"
+main = "src/index.js"
+compatibility_date = "2026-04-09"
+workers_dev = true
+
+[assets]
+directory = "."
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
