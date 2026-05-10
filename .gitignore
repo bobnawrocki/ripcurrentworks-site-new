@@ -1,3 +1,4 @@
 
 # Cloudflare local cache
 .wrangler/
+.scooby/
