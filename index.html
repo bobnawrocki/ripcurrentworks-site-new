@@ -119,6 +119,13 @@
       box-shadow: 0 16px 36px rgba(0,0,0,.26);
       border-color: rgba(47,212,255,.28);
     }
+    .product-name-link {
+      color: inherit;
+      text-decoration: none;
+    }
+    .product-name-link:hover {
+      color: var(--accent);
+    }
     .product-name {
       margin: 0 0 8px;
       font-size: 20px;
@@ -201,13 +208,14 @@
           </ul>
         </article>
         <article class="product-card">
-          <h3 class="product-name">TripButler</h3>
-          <p class="product-tagline">Travel planning that adapts to you</p>
+          <h3 class="product-name"><a class="product-name-link" href="/baxter/">Baxter Travel App</a></h3>
+          <p class="product-tagline">A smarter way to plan and travel</p>
           <ul>
-            <li>Dynamic “Today” view for each trip</li>
-            <li>Personalized recommendations</li>
-            <li>Collaborative planning with invites</li>
+            <li>Shape better trips from the details you already know</li>
+            <li>Keep travelers, preferences, and trip readiness organized</li>
+            <li>Use Today to surface what matters on the road</li>
           </ul>
+          <div class="product-note">Currently in development</div>
         </article>
         <article class="product-card">
           <h3 class="product-name">FunctionIQ</h3>

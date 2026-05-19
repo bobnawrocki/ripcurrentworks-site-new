@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Baxter Travel App | Rip Current Works</title>
+  <meta name="description" content="Baxter is an intelligent travel companion for planning better trips, organizing travel details, and surfacing what matters during travel." />
+  <style>
+    :root {
+      --paper: #F6F1E8;
+      --paper-soft: #EEE4D5;
+      --ink: #17212B;
+      --ink-muted: #59616B;
+      --line: rgba(23,33,43,.14);
+      --deep: #0E2230;
+      --deep-2: #16394A;
+      --teal: #187C83;
+      --coral: #C96E4B;
+      --gold: #D7A64D;
+      --card: rgba(255,255,255,.68);
+      --shadow: rgba(22,34,45,.18);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(140deg, rgba(24,124,131,.12), transparent 34%),
+        linear-gradient(28deg, rgba(201,110,75,.12), transparent 42%),
+        var(--paper);
+    }
+
+    a { color: inherit; }
+    .page {
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .nav {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 24px 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand-logo {
+      display: block;
+      width: clamp(210px, 24vw, 266px);
+      height: auto;
+    }
+    .nav a {
+      color: var(--ink-muted);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .nav a:hover { color: var(--teal); }
+
+    .hero {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: clamp(42px, 7vw, 86px) 0 clamp(50px, 8vw, 96px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+      gap: clamp(34px, 7vw, 84px);
+      align-items: center;
+    }
+    .app-mark {
+      width: 76px;
+      height: 76px;
+      margin-bottom: 28px;
+      border: 1px solid rgba(255,255,255,.74);
+      border-radius: 22px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.80), rgba(255,255,255,.20)),
+        linear-gradient(160deg, var(--deep), var(--teal) 55%, var(--gold));
+      box-shadow: 0 18px 48px rgba(14,34,48,.22);
+      position: relative;
+    }
+    .app-mark::after {
+      content: "B";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      color: var(--deep);
+      font-size: clamp(50px, 8.4vw, 96px);
+      line-height: .92;
+      letter-spacing: 0;
+    }
+    .hero-copy {
+      max-width: 650px;
+      margin: 24px 0 0;
+      color: var(--ink-muted);
+      font-size: clamp(20px, 2.4vw, 26px);
+      line-height: 1.42;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid var(--deep);
+    }
+    .button.primary {
+      background: var(--deep);
+      color: #fff;
+      box-shadow: 0 18px 36px rgba(14,34,48,.20);
+    }
+    .button.secondary {
+      color: var(--deep);
+      background: rgba(255,255,255,.42);
+    }
+
+    .phone-stack {
+      position: relative;
+      min-height: 560px;
+    }
+    .phone {
+      position: absolute;
+      width: min(82vw, 290px);
+      min-height: 548px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 36px;
+      background: #111A20;
+      box-shadow: 0 28px 80px rgba(14,34,48,.30);
+    }
+    .phone.primary-phone {
+      right: 24px;
+      top: 0;
+      z-index: 2;
+    }
+    .phone.secondary-phone {
+      right: 148px;
+      top: 58px;
+      z-index: 1;
+      transform: rotate(-6deg);
+      opacity: .82;
+    }
+    .screen {
+      min-height: 516px;
+      border-radius: 25px;
+      padding: 22px;
+      background:
+        linear-gradient(180deg, rgba(246,241,232,.98), rgba(238,228,213,.96)),
+        var(--paper);
+      overflow: hidden;
+    }
+    .screen-title {
+      margin: 0 0 18px;
+      color: var(--deep);
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 850;
+    }
+    .screen-card {
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid rgba(23,33,43,.10);
+      border-radius: 18px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 10px 26px rgba(22,34,45,.08);
+    }
+    .screen-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--deep);
+      font-size: 16px;
+    }
+    .screen-card span {
+      display: block;
+      color: var(--ink-muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .route-line {
+      height: 90px;
+      margin: 18px 4px 0;
+      border-left: 3px solid var(--teal);
+      position: relative;
+    }
+    .route-line::before,
+    .route-line::after {
+      content: "";
+      position: absolute;
+      left: -8px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--coral);
+      box-shadow: 0 0 0 5px rgba(201,110,75,.14);
+    }
+    .route-line::before { top: 0; }
+    .route-line::after { bottom: 0; background: var(--gold); box-shadow: 0 0 0 5px rgba(215,166,77,.16); }
+
+    .section {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: clamp(54px, 8vw, 92px) 0;
+      border-top: 1px solid var(--line);
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: clamp(28px, 7vw, 76px);
+      align-items: start;
+    }
+    h2 {
+      margin: 0;
+      color: var(--deep);
+      font-size: clamp(32px, 4.6vw, 58px);
+      line-height: .98;
+      letter-spacing: 0;
+    }
+    .section p {
+      margin: 18px 0 0;
+      color: var(--ink-muted);
+      font-size: 19px;
+      line-height: 1.62;
+    }
+    .feature-list {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .feature-list li {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: 0 14px 38px rgba(22,34,45,.07);
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.5;
+    }
+    .feature-list strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--deep);
+      font-size: 18px;
+    }
+
+    .story-band {
+      background:
+        linear-gradient(180deg, rgba(14,34,48,.96), rgba(22,57,74,.96)),
+        var(--deep);
+      color: #fff;
+    }
+    .story-band .section {
+      border-top: 0;
+    }
+    .story-band h2,
+    .story-band .feature-list strong { color: #fff; }
+    .story-band .section p,
+    .story-band .feature-list li { color: rgba(255,255,255,.72); }
+    .story-band .feature-list li {
+      border-color: rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      box-shadow: none;
+    }
+
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 34px;
+    }
+    .screenshot-card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: rgba(255,255,255,.62);
+      box-shadow: 0 18px 48px rgba(22,34,45,.10);
+    }
+    .screenshot-placeholder {
+      aspect-ratio: 9 / 16;
+      border-radius: 19px;
+      padding: 18px;
+      background:
+        linear-gradient(160deg, rgba(24,124,131,.16), transparent 40%),
+        linear-gradient(28deg, rgba(201,110,75,.18), transparent 52%),
+        #FDFBF7;
+      border: 1px dashed rgba(23,33,43,.18);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: var(--ink-muted);
+    }
+    .screenshot-placeholder strong {
+      color: var(--deep);
+      font-size: 18px;
+      line-height: 1.15;
+    }
+    .screenshot-placeholder span {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .todo-note {
+      margin-top: 18px;
+      color: var(--ink-muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .closing {
+      width: min(860px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: clamp(64px, 9vw, 108px) 0;
+      text-align: center;
+    }
+    .closing p {
+      margin: 18px auto 0;
+      max-width: 660px;
+      color: var(--ink-muted);
+      font-size: 20px;
+      line-height: 1.55;
+    }
+    .closing .actions {
+      justify-content: center;
+    }
+    .footer {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 24px 0 34px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--ink-muted);
+      font-size: 14px;
+    }
+    .footer a {
+      color: var(--teal);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 940px) {
+      .hero,
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+      .phone-stack {
+        min-height: 500px;
+        width: min(100%, 540px);
+        margin: 0 auto;
+      }
+      .phone.primary-phone { right: 30px; }
+      .phone.secondary-phone { right: auto; left: 20px; }
+      .screenshot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .nav { width: min(100% - 32px, 1120px); padding-top: 18px; }
+      .brand-logo { width: 196px; }
+      .nav a { font-size: 13px; }
+      .hero,
+      .section,
+      .closing,
+      .footer {
+        width: min(100% - 32px, 1120px);
+      }
+      .actions { flex-direction: column; }
+      .button { width: 100%; }
+      .phone-stack { min-height: 480px; }
+      .phone {
+        width: min(76vw, 270px);
+        min-height: 500px;
+      }
+      .phone.primary-phone { right: 0; }
+      .phone.secondary-phone { left: 0; top: 70px; }
+      .screen { min-height: 468px; padding: 18px; }
+      .screen-title { font-size: 24px; }
+      .feature-list li { padding: 18px; border-radius: 16px; }
+      .screenshot-grid { grid-template-columns: 1fr; }
+      .footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav" aria-label="Primary navigation">
+      <a href="/" aria-label="Rip Current Works home">
+        <img class="brand-logo" src="/logo-horizontal-dark.png" alt="Rip Current Works" />
+      </a>
+      <a href="/">Back to Rip Current Works</a>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <div class="app-mark" aria-label="Baxter app icon placeholder"></div>
+        <h1>A smarter way to plan and travel.</h1>
+        <p class="hero-copy">Baxter helps you shape better trips, organize the details, and surface what matters when you&rsquo;re on the road.</p>
+        <div class="actions" aria-label="Baxter calls to action">
+          <span class="button primary">Coming Soon</span>
+          <a class="button secondary" href="/">Built by Rip Current Works</a>
+        </div>
+      </div>
+
+      <div class="phone-stack" aria-label="Baxter app preview">
+        <div class="phone secondary-phone" aria-hidden="true">
+          <div class="screen">
+            <h2 class="screen-title">Plan</h2>
+            <div class="screen-card">
+              <strong>Start with an anchor</strong>
+              <span>A marathon weekend, wedding, conference, flight deal, or open-ended idea.</span>
+            </div>
+            <div class="route-line"></div>
+            <div class="screen-card">
+              <strong>Shape the trip</strong>
+              <span>Turn known details into a draft that can become a real itinerary.</span>
+            </div>
+          </div>
+        </div>
+        <div class="phone primary-phone">
+          <div class="screen">
+            <h2 class="screen-title">Today</h2>
+            <div class="screen-card">
+              <strong>Good morning in Lisbon</strong>
+              <span>Your hotel check-in is at 3:00 PM. The neighborhood cafe you saved opens at 8:30.</span>
+            </div>
+            <div class="screen-card">
+              <strong>Trip readiness</strong>
+              <span>Passport context, traveler notes, and important details stay close without taking over the day.</span>
+            </div>
+            <div class="screen-card">
+              <strong>Nearby essentials</strong>
+              <span>Practical stops and recommendations that fit your pace and travel style.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section" aria-labelledby="core-message">
+        <div class="section-grid">
+          <div>
+            <h2 id="core-message">Tell Baxter what you know. Baxter helps shape what the trip should become.</h2>
+            <p>Baxter is built for the messy middle of travel planning, when you have a few facts, a few hopes, and a lot of decisions still ahead.</p>
+          </div>
+          <ul class="feature-list">
+            <li><strong>Plan better trips</strong>Plan with Baxter is guided discovery, not generic itinerary generation. Start with a marathon, wedding, conference, flight deal, road trip, or loose idea, then let Baxter help organize the next useful questions.</li>
+            <li><strong>Built around real details</strong>Trips, travelers, preferences, documents, lodging, dining, activities, and notes have a structured place to live.</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="story-band">
+        <section class="section" aria-labelledby="confidence">
+          <div class="section-grid">
+            <div>
+              <h2 id="confidence">Travel with confidence.</h2>
+              <p>During travel, Baxter&rsquo;s Today view keeps the important pieces visible without turning the trip into a spreadsheet.</p>
+            </div>
+            <ul class="feature-list">
+              <li><strong>Today view</strong>See upcoming reservations, current destination context, practical nearby essentials, and trip readiness cues in one calm place.</li>
+              <li><strong>Current context</strong>Move through the day with the details that matter now, while the rest of the trip remains organized in the background.</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <section class="section" aria-labelledby="traveler-details">
+        <div class="section-grid">
+          <div>
+            <h2 id="traveler-details">Keep traveler details organized.</h2>
+            <p>Baxter gives each traveler a profile for the information that can shape better recommendations and smoother planning.</p>
+          </div>
+          <ul class="feature-list">
+            <li><strong>Profiles and preferences</strong>Keep travel style, dining preferences, pace, loyalty programs, and Known Traveler Number context close to each trip.</li>
+            <li><strong>Readiness context</strong>Track passport and important document notes without making claims Baxter cannot guarantee. The goal is practical organization, not false certainty.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="recommendations">
+        <div class="section-grid">
+          <div>
+            <h2 id="recommendations">Recommendations that fit you.</h2>
+            <p>Baxter is designed to understand the difference between a polished hotel bar, a quick family stop, a local favorite, and a familiar chain when that is what the moment calls for.</p>
+          </div>
+          <ul class="feature-list">
+            <li><strong>Lodging, dining, and activities</strong>Find options that match the trip, the traveler, the destination, and the day.</li>
+            <li><strong>Travel style matters</strong>Recommendations can reflect pace, local character, comfort level, and the kind of experience you actually want.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="real-trips">
+        <div class="section-grid">
+          <div>
+            <h2 id="real-trips">Built for real trips.</h2>
+            <p>Some trips are simple. Some have multiple cities, anchors, detours, and half-formed ideas. Baxter is being shaped for both.</p>
+          </div>
+          <ul class="feature-list">
+            <li><strong>Single-city or multi-city</strong>Plan one destination, a connected route, or a trip that changes shape as you learn more.</li>
+            <li><strong>Anchored and exploratory</strong>Support trips built around fixed events, road trips, seasonal ideas, and early drafts that are not ready to become an itinerary yet.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="screenshots">
+        <h2 id="screenshots">A clearer place for the trip.</h2>
+        <p>Product screenshots will be added as Baxter moves closer to launch. These frames reserve the final gallery layout without loading missing images.</p>
+        <div class="screenshot-grid">
+          <!-- TODO: Replace this placeholder with /assets/baxter/screenshots/today.png when the final screenshot is available. -->
+          <div class="screenshot-card">
+            <div class="screenshot-placeholder" role="img" aria-label="Placeholder for Baxter Today view screenshot">
+              <strong>Today</strong>
+              <span>/assets/baxter/screenshots/today.png</span>
+            </div>
+          </div>
+          <!-- TODO: Replace this placeholder with /assets/baxter/screenshots/plan.png when the final screenshot is available. -->
+          <div class="screenshot-card">
+            <div class="screenshot-placeholder" role="img" aria-label="Placeholder for Plan with Baxter screenshot">
+              <strong>Plan with Baxter</strong>
+              <span>/assets/baxter/screenshots/plan.png</span>
+            </div>
+          </div>
+          <!-- TODO: Replace this placeholder with /assets/baxter/screenshots/trips.png when the final screenshot is available. -->
+          <div class="screenshot-card">
+            <div class="screenshot-placeholder" role="img" aria-label="Placeholder for Baxter trips overview screenshot">
+              <strong>Trips</strong>
+              <span>/assets/baxter/screenshots/trips.png</span>
+            </div>
+          </div>
+          <!-- TODO: Replace this placeholder with /assets/baxter/screenshots/traveler-profile.png when the final screenshot is available. -->
+          <div class="screenshot-card">
+            <div class="screenshot-placeholder" role="img" aria-label="Placeholder for Baxter traveler profile screenshot">
+              <strong>Traveler profile</strong>
+              <span>/assets/baxter/screenshots/traveler-profile.png</span>
+            </div>
+          </div>
+        </div>
+        <p class="todo-note">Add the Baxter app icon at <strong>/assets/baxter/app-icon.png</strong> when final launch artwork is ready.</p>
+      </section>
+    </main>
+
+    <section class="closing" aria-labelledby="closing-cta">
+      <h2 id="closing-cta">Baxter is currently in development.</h2>
+      <p>Follow Rip Current Works for launch updates as Baxter moves toward its public release.</p>
+      <div class="actions">
+        <a class="button primary" href="/">Return to Rip Current Works</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Built to be useful. <a href="/privacy/">Privacy</a></span>
+      <span>&copy; Rip Current Works</span>
+    </footer>
+  </div>
+</body>
+</html>
