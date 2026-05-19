@@ -114,6 +114,15 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.18);
       transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
     }
+    .product-link {
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .product-link:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
     .product-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 16px 36px rgba(0,0,0,.26);
@@ -207,8 +216,8 @@
             <li>Community heat maps without exposing exact locations</li>
           </ul>
         </article>
-        <article class="product-card">
-          <h3 class="product-name"><a class="product-name-link" href="/baxter/">Baxter Travel App</a></h3>
+        <a class="product-card product-link" href="/baxter/">
+          <h3 class="product-name">Baxter Travel</h3>
           <p class="product-tagline">A smarter way to plan and travel</p>
           <ul>
             <li>Shape better trips from the details you already know</li>
@@ -216,8 +225,8 @@
             <li>Use Today to surface what matters on the road</li>
           </ul>
           <div class="product-note">Currently in development</div>
-        </article>
-        <article class="product-card">
+        </a>
+        <a class="product-card product-link" href="/functioniq/">
           <h3 class="product-name">FunctionIQ</h3>
           <p class="product-tagline">Private event operations, from inquiry to execution</p>
           <ul>
@@ -226,9 +235,9 @@
             <li>Store event details, notes, and execution sheets</li>
           </ul>
           <div class="product-note">Built for restaurants, venues, and event-driven businesses</div>
-        </article>
+        </a>
       </div>
-      <div class="cta">Interested in FunctionIQ? <a href="mailto:bob.com">Let’s talk.</a></div>
+      <div class="cta">Interested in FunctionIQ? <a href="mailto:bob@ripcurrentworks.com">Let’s talk.</a></div>
     </div>
 
     <div class="footer">
