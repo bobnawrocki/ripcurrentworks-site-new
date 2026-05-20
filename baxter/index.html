@@ -73,24 +73,10 @@
       width: 76px;
       height: 76px;
       margin-bottom: 28px;
-      border: 1px solid rgba(255,255,255,.74);
-      border-radius: 22px;
-      background:
-        linear-gradient(145deg, rgba(255,255,255,.80), rgba(255,255,255,.20)),
-        linear-gradient(160deg, var(--deep), var(--teal) 55%, var(--gold));
+      display: block;
+      border-radius: 20px;
       box-shadow: 0 18px 48px rgba(14,34,48,.22);
-      position: relative;
-    }
-    .app-mark::after {
-      content: "B";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-size: 38px;
-      font-weight: 800;
-      letter-spacing: 0;
+      object-fit: cover;
     }
     h1 {
       max-width: 780px;
@@ -321,13 +307,6 @@
       font-size: 13px;
       line-height: 1.4;
     }
-    .todo-note {
-      margin-top: 18px;
-      color: var(--ink-muted);
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
     .closing {
       width: min(860px, calc(100% - 40px));
       margin: 0 auto;
@@ -414,7 +393,7 @@
 
     <header class="hero">
       <div>
-        <div class="app-mark" aria-label="Baxter app icon placeholder"></div>
+        <img class="app-mark" src="/assets/baxter/app-icon.png" alt="Baxter Travel app icon" />
         <h1>A smarter way to plan and travel.</h1>
         <p class="hero-copy">Baxter helps you shape better trips, organize the details, and surface what matters when you&rsquo;re on the road.</p>
         <div class="actions" aria-label="Baxter calls to action">
@@ -559,7 +538,6 @@
             </div>
           </div>
         </div>
-        <p class="todo-note">Add the Baxter app icon at <strong>/assets/baxter/app-icon.png</strong> when final launch artwork is ready.</p>
       </section>
     </main>
 
