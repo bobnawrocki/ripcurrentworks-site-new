@@ -3,6 +3,8 @@
 .gitignore
 .wrangler
 .wrangler/**
+.scooby
+.scooby/**
 .DS_Store
 
 src
@@ -11,6 +13,7 @@ node_modules
 node_modules/**
 
 README.md
+architecture.proposed.md
 wrangler.toml
 .assetsignore
 package.json

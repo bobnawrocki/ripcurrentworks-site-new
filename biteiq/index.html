@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BiteIQ Heat Map</title>
+  <meta name="description" content="A live BiteIQ catch heat map centered on Jekyll Island." />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.css" />
+  <style>
+    :root {
+      --bg: #07111d;
+      --panel: rgba(9, 22, 36, .86);
+      --panel-strong: rgba(8, 19, 31, .94);
+      --line: rgba(255, 255, 255, .14);
+      --text: #f6fbff;
+      --muted: #b8c5cf;
+      --accent: #62ddce;
+      --shadow: rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #06101b 0%, #102238 100%);
+    }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .map-shell {
+      position: relative;
+      min-height: 0;
+      height: calc(100vh - 24px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #081420;
+      box-shadow: 0 24px 70px var(--shadow);
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+    }
+
+    .map-header {
+      position: absolute;
+      z-index: 3;
+      top: 16px;
+      left: 16px;
+      width: min(430px, calc(100% - 32px));
+      padding: 13px 14px 12px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(7, 17, 29, .88), rgba(7, 17, 29, .68));
+      box-shadow: 0 14px 36px rgba(0, 0, 0, .24);
+      backdrop-filter: blur(12px);
+    }
+
+    .kicker {
+      margin: 0 0 4px;
+      color: #9fd7ff;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.3vw, 34px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .map-header p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .map-logo {
+      position: absolute;
+      z-index: 3;
+      left: 16px;
+      bottom: 18px;
+      width: 184px;
+      max-width: calc(100% - 32px);
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 8px;
+      background: rgba(7, 17, 29, .72);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .24);
+      backdrop-filter: blur(10px);
+    }
+
+    .map-logo img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .legend {
+      min-height: 0;
+      height: calc(100vh - 24px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 24px 70px var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .legend-inner {
+      padding: 18px;
+    }
+
+    .total-card {
+      margin: 0 0 14px;
+      padding: 16px;
+      border: 1px solid rgba(98, 221, 206, .34);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(98, 221, 206, .16), rgba(98, 221, 206, .06));
+    }
+
+    .total-label {
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .total-number {
+      display: block;
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .legend h2 {
+      margin: 0 0 6px;
+      font-size: 23px;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .legend-copy {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .species-list {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .species {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 11px;
+      align-items: center;
+      min-height: 62px;
+      padding: 11px 12px;
+      border: 1px solid rgba(255, 255, 255, .10);
+      border-radius: 8px;
+      background: var(--panel-strong);
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color);
+      box-shadow: 0 0 18px var(--color);
+    }
+
+    .species strong,
+    .species span {
+      display: block;
+      min-width: 0;
+    }
+
+    .species strong {
+      overflow-wrap: anywhere;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.1;
+    }
+
+    .species span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.1;
+    }
+
+    .maplibregl-ctrl-top-left {
+      top: 130px;
+      left: 16px;
+    }
+
+    .maplibregl-ctrl-group {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .2);
+    }
+
+    .maplibregl-popup-content {
+      border-radius: 8px;
+      color: #0c1722;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 920px) {
+      body { overflow: auto; }
+
+      .app {
+        height: auto;
+        min-height: 100vh;
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(620px, 72vh) auto;
+      }
+
+      .map-shell,
+      .legend {
+        min-height: 0;
+      }
+
+      .legend {
+        overflow: visible;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        padding: 8px;
+        gap: 8px;
+        grid-template-rows: minmax(560px, 70vh) auto;
+      }
+
+      .map-header {
+        top: 10px;
+        left: 10px;
+        width: calc(100% - 20px);
+      }
+
+      .map-logo {
+        left: 10px;
+        bottom: 12px;
+        width: 152px;
+      }
+
+      .maplibregl-ctrl-top-left {
+        top: 128px;
+        left: 10px;
+      }
+
+      .legend-inner {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="map-shell" aria-label="BiteIQ catch heat map centered on Jekyll Island">
+      <div id="map"></div>
+      <header class="map-header">
+        <p class="kicker">RipCurrent Works / BiteIQ</p>
+        <h1>BiteIQ Heat Map</h1>
+        <p>Live catch density around Jekyll Island. Map bearing is turned so the west side of Jekyll is at the top.</p>
+      </header>
+      <a class="map-logo" href="https://ripcurrentworks.com/" aria-label="RipCurrent Works home">
+        <img src="https://ripcurrentworks.com/logo-horizontal-light.png" alt="RipCurrent Works" />
+      </a>
+    </section>
+
+    <aside class="legend" aria-label="Species legend">
+      <div class="legend-inner">
+        <section class="total-card">
+          <p class="total-label">Total catches</p>
+          <strong class="total-number" id="totalCatches">0</strong>
+        </section>
+        <h2>Species Legend</h2>
+        <p class="legend-copy">Total catches by species from the BiteIQ database.</p>
+        <ul class="species-list" id="speciesList"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <script src="https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.js"></script>
+  <script>
+    const config = {
+      supabaseUrl: "https://gaasebboluctiyxskuif.supabase.co",
+      supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhYXNlYmJvbHVjdGl5eHNrdWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTY3MDYsImV4cCI6MjA4OTkzMjcwNn0.ft9-VNV7ladtVimXOF4WNO4RHo7AO7f41jNbvfcySI4",
+      catchesTable: "catches"
+    };
+
+    const colorPalette = ["#b589ff", "#8be8f0", "#87f2c7", "#6ccff0", "#c9ff70", "#ffd36a", "#baf56a", "#ff9f68", "#ff7a90"];
+    const prioritySpecies = ["Flounder", "Redfish", "Spotted Seatrout"];
+
+    function normalizeSpecies(value) {
+      const raw = String(value || "Unknown").trim() || "Unknown";
+      const lower = raw.toLowerCase();
+      if (lower.includes("flounder")) return "Flounder";
+      if (lower.includes("redfish") || lower.includes("red drum")) return "Redfish";
+      if (lower.includes("spotted seatrout") || lower.includes("speckled trout")) return "Spotted Seatrout";
+      return raw;
+    }
+
+    function speciesColor(name) {
+      const priorityIndex = prioritySpecies.indexOf(name);
+      if (priorityIndex >= 0) return colorPalette[priorityIndex];
+      let hash = 0;
+      for (let i = 0; i < name.length; i += 1) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+      return colorPalette[(hash % (colorPalette.length - 3)) + 3];
+    }
+
+    function sortSpeciesRows(rows) {
+      return rows.sort((a, b) => {
+        const priorityA = prioritySpecies.indexOf(a.name);
+        const priorityB = prioritySpecies.indexOf(b.name);
+        if (priorityA >= 0 || priorityB >= 0) {
+          return (priorityA >= 0 ? priorityA : 99) - (priorityB >= 0 ? priorityB : 99);
+        }
+        return a.name.localeCompare(b.name);
+      });
+    }
+
+    async function loadCatches() {
+      const url = `${config.supabaseUrl}/rest/v1/${encodeURIComponent(config.catchesTable)}?select=id,timestamp,species,ai_species,ai_confidence,latitude,longitude,location&order=timestamp.desc`;
+      const response = await fetch(url, {
+        headers: {
+          apikey: config.supabaseAnonKey,
+          Authorization: `Bearer ${config.supabaseAnonKey}`
+        }
+      });
+
+      if (!response.ok) throw new Error(`Supabase fetch failed: ${response.status}`);
+      return response.json();
+    }
+
+    function getCoordinates(row) {
+      const lat = Number(row.latitude ?? row.lat ?? 0);
+      const lng = Number(row.longitude ?? row.lng ?? 0);
+      if (Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0) return [lng, lat];
+      return null;
+    }
+
+    function buildSpeciesRows(rows) {
+      const totals = rows.reduce((acc, row) => {
+        const name = normalizeSpecies(row.species ?? row.ai_species);
+        acc[name] = (acc[name] || 0) + Number(row.count ?? 1);
+        return acc;
+      }, {});
+
+      return sortSpeciesRows(Object.entries(totals).map(([name, catches]) => ({
+        name,
+        catches,
+        color: speciesColor(name)
+      })));
+    }
+
+    function renderLegend(speciesRows) {
+      const totalCatches = speciesRows.reduce((sum, item) => sum + item.catches, 0);
+      document.getElementById("totalCatches").textContent = totalCatches.toLocaleString();
+      document.getElementById("speciesList").innerHTML = speciesRows.map((item) => `
+        <li class="species" style="--color: ${item.color}">
+          <span class="dot" aria-hidden="true"></span>
+          <span>
+            <strong>${item.name}</strong>
+            <span>${item.catches.toLocaleString()} catches</span>
+          </span>
+        </li>
+      `).join("");
+    }
+
+    function buildFeatures(rows) {
+      return rows.map((row) => {
+        const coordinates = getCoordinates(row);
+        if (!coordinates) return null;
+        const name = normalizeSpecies(row.species ?? row.ai_species);
+        return {
+          type: "Feature",
+          properties: {
+            name,
+            catches: Number(row.count ?? 1),
+            color: speciesColor(name)
+          },
+          geometry: { type: "Point", coordinates }
+        };
+      }).filter(Boolean);
+    }
+
+    const map = new maplibregl.Map({
+      container: "map",
+      center: [-81.4147, 31.0705],
+      zoom: 13.55,
+      bearing: 90,
+      pitch: 0,
+      attributionControl: false,
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: [
+              "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            ],
+            tileSize: 256,
+            attribution: "OpenStreetMap"
+          }
+        },
+        layers: [
+          {
+            id: "osm",
+            type: "raster",
+            source: "osm"
+          }
+        ]
+      }
+    });
+
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), "top-left");
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+
+    map.on("load", async () => {
+      let rows = [];
+      try {
+        rows = await loadCatches();
+      } catch (error) {
+        console.error(error);
+      }
+
+      const speciesRows = buildSpeciesRows(rows);
+      const features = buildFeatures(rows);
+      renderLegend(speciesRows);
+
+      map.addSource("catches", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features
+        }
+      });
+
+      map.addLayer({
+        id: "catch-heat",
+        type: "heatmap",
+        source: "catches",
+        paint: {
+          "heatmap-weight": ["interpolate", ["linear"], ["get", "catches"], 1, .35, 10, 1],
+          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 12, .9, 15, 1.45],
+          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 12, 24, 15, 58],
+          "heatmap-opacity": .72,
+          "heatmap-color": [
+            "interpolate",
+            ["linear"],
+            ["heatmap-density"],
+            0, "rgba(98,221,206,0)",
+            .25, "rgba(98,221,206,.42)",
+            .5, "rgba(139,232,240,.66)",
+            .75, "rgba(255,211,106,.78)",
+            1, "rgba(255,117,117,.88)"
+          ]
+        }
+      });
+
+      map.addLayer({
+        id: "catch-circles",
+        type: "circle",
+        source: "catches",
+        paint: {
+          "circle-radius": ["interpolate", ["linear"], ["get", "catches"], 3, 7, 9, 15],
+          "circle-color": ["get", "color"],
+          "circle-opacity": .8,
+          "circle-stroke-color": "rgba(255,255,255,.9)",
+          "circle-stroke-width": 1.5
+        }
+      });
+
+      map.on("click", "catch-circles", (event) => {
+        const feature = event.features[0];
+        new maplibregl.Popup()
+          .setLngLat(feature.geometry.coordinates)
+          .setHTML(`<strong>${feature.properties.name}</strong><br>${Number(feature.properties.catches).toLocaleString()} catches in this cluster`)
+          .addTo(map);
+      });
+
+      map.on("mouseenter", "catch-circles", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+
+      map.on("mouseleave", "catch-circles", () => {
+        map.getCanvas().style.cursor = "";
+      });
+    });
+  </script>
+</body>
+</html>
