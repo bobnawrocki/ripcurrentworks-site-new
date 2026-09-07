@@ -89,6 +89,14 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (url.hostname === "biteiq.ripcurrentworks.com") {
+      const assetUrl = new URL(url);
+      assetUrl.pathname = url.pathname.startsWith("/biteiq/")
+        ? url.pathname
+        : `/biteiq${url.pathname}`;
+      return env.ASSETS.fetch(new Request(assetUrl, request));
+    }
+
     if (url.pathname === "/apple-app-site-association" || url.pathname === "/.well-known/apple-app-site-association") {
       return new Response(AASA, {
         status: 200,
