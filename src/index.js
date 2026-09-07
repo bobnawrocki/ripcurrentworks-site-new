@@ -91,9 +91,17 @@ export default {
 
     if (url.hostname === "biteiq.ripcurrentworks.com") {
       const assetUrl = new URL(url);
-      assetUrl.pathname = url.pathname.startsWith("/biteiq/")
-        ? url.pathname
-        : `/biteiq${url.pathname}`;
+      const legacyHeatMapPaths = new Set([
+        "/heat-map",
+        "/heat-map/",
+        "/biteiq/heat-map",
+        "/biteiq/heat-map/"
+      ]);
+      assetUrl.pathname = legacyHeatMapPaths.has(url.pathname)
+        ? "/biteiq/"
+        : url.pathname.startsWith("/biteiq/")
+          ? url.pathname
+          : `/biteiq${url.pathname}`;
       return env.ASSETS.fetch(new Request(assetUrl, request));
     }
 
