@@ -375,7 +375,7 @@ body {
 .tide-chart {
   display: block;
   width: 100%;
-  height: 160px;
+  height: 184px;
   overflow: hidden;
 }
 
@@ -732,6 +732,26 @@ body {
   font-weight: 760;
 }
 
+@media (max-width: 759px) {
+  .hourly-card {
+    min-height: 104px;
+    padding: 9px 8px;
+    border-radius: 15px;
+  }
+
+  .hourly-card time { font-size: 17px; }
+  .hourly-card strong { font-size: 27px; }
+  .hourly-card span { margin-top: 5px; font-size: 12px; }
+
+  .hourly-card .weather-icon {
+    width: 27px;
+    height: 27px;
+    margin: 6px auto 3px;
+    font-size: 20px;
+    line-height: 27px;
+  }
+}
+
 @media (max-width: 370px) {
   .content-stack {
     width: min(100% - 18px, 430px);
@@ -752,7 +772,7 @@ body {
   }
 
   .tide-chart {
-    height: 148px;
+    height: 170px;
   }
 
   .daily-forecast-card {
