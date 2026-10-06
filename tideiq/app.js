@@ -574,7 +574,7 @@ function buildSmoothPath(points) {
 
 function getChartGeometry(points, currentPoint, tideEvents, chartStartDateTime) {
   const width = window.innerWidth < 760 ? 360 : window.innerWidth < 1200 ? 700 : 980;
-  const height = width === 360 ? 202 : 242;
+  const height = width === 360 ? 210 : 242;
   const padding = { top: 22, right: 24, bottom: 40, left: 58 };
   const plottedHeights = [
     ...points.map((point) => Number(point.height)),
