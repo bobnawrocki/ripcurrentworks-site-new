@@ -574,7 +574,7 @@ function buildSmoothPath(points) {
 
 function getChartGeometry(points, currentPoint, tideEvents, chartStartDateTime) {
   const width = window.innerWidth < 760 ? 360 : window.innerWidth < 1200 ? 700 : 980;
-  const height = 242;
+  const height = width === 360 ? 176 : 242;
   const padding = { top: 22, right: 24, bottom: 40, left: 58 };
   const plottedHeights = [
     ...points.map((point) => Number(point.height)),
@@ -659,7 +659,7 @@ function TideChart({ points, currentPoint, tideEvents, chartStartDateTime, marke
       <div class="section-head">
         <h2 id="chart-title">Tide curve</h2>
       </div>
-      <svg class="tide-chart" viewBox="0 0 ${geometry.width} ${geometry.height}" preserveAspectRatio="none" role="img" aria-label="24 hour tide height chart with ${markerLabel}, high tide, and low tide marked.">
+      <svg class="tide-chart" viewBox="0 0 ${geometry.width} ${geometry.height}" role="img" aria-label="24 hour tide height chart with ${markerLabel}, high tide, and low tide marked.">
         <defs>
           <linearGradient id="tideFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#1aa8ff" stop-opacity="0.46" />
