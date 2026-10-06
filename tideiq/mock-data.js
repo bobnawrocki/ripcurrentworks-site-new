@@ -37,42 +37,5 @@ window.tideIqData = {
       height: "-0.3 ft"
     }
   ],
-  hourlyConditions: [
-    {
-      time: "11 AM",
-      condition: "Thunderstorm",
-      temperature: "93°",
-      windSpeed: "10 mph"
-    },
-    {
-      time: "12 PM",
-      condition: "Thunderstorm",
-      temperature: "94°",
-      windSpeed: "10 mph"
-    },
-    {
-      time: "1 PM",
-      condition: "Thunderstorm",
-      temperature: "94°",
-      windSpeed: "9 mph"
-    },
-    {
-      time: "2 PM",
-      condition: "Thunderstorm",
-      temperature: "96°",
-      windSpeed: "8 mph"
-    },
-    {
-      time: "3 PM",
-      condition: "Thunderstorm",
-      temperature: "95°",
-      windSpeed: "8 mph"
-    },
-    {
-      time: "4 PM",
-      condition: "Thunderstorm",
-      temperature: "93°",
-      windSpeed: "7 mph"
-    }
-  ]
+  hourlyConditions: []
 };

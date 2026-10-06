@@ -199,13 +199,37 @@ function typeLabel(type) {
   return type === "H" ? "HIGH" : "LOW";
 }
 
-function buildCurrentHourlyConditions(conditions, date = new Date()) {
-  const { hour } = getStationDateParts(date);
-
-  return conditions.map((condition, index) => ({
-    ...condition,
-    time: formatHourFrom24(hour + index)
-  }));
+async function fetchHourlyConditions(date = new Date()) {
+  const stationNow = getStationDateParts(date);
+  const currentHour = `${formatDateKey(stationNow)}T${String(stationNow.hour).padStart(2, "0")}:00`;
+  const url = buildNoaaUrl(OPEN_METEO_API_URL, {
+    ...STATION_COORDINATES,
+    hourly: "temperature_2m,weather_code,wind_speed_10m,is_day",
+    temperature_unit: "fahrenheit",
+    wind_speed_unit: "mph",
+    timezone: STATION_TIME_ZONE,
+    forecast_days: 2
+  });
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Open-Meteo HTTP ${response.status}`);
+  const { hourly } = await response.json();
+  const start = hourly?.time?.indexOf(currentHour) ?? -1;
+  if (start < 0 || hourly.time.length < start + 6) throw new Error("Hourly forecast is missing current hours");
+  return hourly.time.slice(start, start + 6).map((timestamp, offset) => {
+    const index = start + offset;
+    const temperature = hourly.temperature_2m?.[index];
+    const wind = hourly.wind_speed_10m?.[index];
+    const code = hourly.weather_code?.[index];
+    if (![temperature, wind, code].every(Number.isFinite)) throw new Error("Hourly forecast contains missing values");
+    const weather = describeWeatherCode(code);
+    return {
+      time: formatHourFrom24(Number(timestamp.split("T")[1].split(":")[0])),
+      condition: weather.label,
+      icon: code === 0 && hourly.is_day?.[index] === 0 ? "🌙" : weather.icon,
+      temperature: `${Math.round(temperature)}°`,
+      windSpeed: `${Math.round(wind)} mph`
+    };
+  });
 }
 
 function buildNoaaUrl(baseUrl, params) {
@@ -750,22 +774,22 @@ function HourlyConditionCard(condition) {
   return `
     <article class="hourly-card" aria-label="${condition.time}: ${condition.condition}, ${condition.temperature}, wind ${condition.windSpeed}">
       <time>${condition.time}</time>
-      ${createIcon("storm", "weather-icon")}
+      <span class="weather-icon" aria-hidden="true">${condition.icon}</span>
       <strong>${condition.temperature}</strong>
       <span>${condition.windSpeed}</span>
     </article>
   `;
 }
 
-function HourlyConditionsBar({ hourlyConditions }) {
+function HourlyConditionsBar({ hourlyConditions, hourlyLoading }) {
   return `
     <section class="hourly-section" aria-labelledby="hourly-title">
       <div class="section-head">
         <h2 id="hourly-title">Hourly Conditions</h2>
-        <span>Swipe</span>
+        <a class="forecast-source" href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>
       </div>
       <div class="hourly-scroll" tabindex="0" aria-label="Scrollable hourly weather conditions">
-        ${hourlyConditions.map(HourlyConditionCard).join("")}
+        ${hourlyConditions.length ? hourlyConditions.map(HourlyConditionCard).join("") : `<p role="status">${hourlyLoading ? "Loading hourly forecast…" : "Hourly forecast unavailable. Retrying shortly."}</p>`}
       </div>
     </section>
   `;
@@ -863,6 +887,15 @@ function withDateContext(data) {
 async function loadTideIqData() {
   const displayTime = getDisplayTime();
 
+  let hourlyConditions = [];
+  if (selectedDate === stationToday) {
+    try {
+      hourlyConditions = await fetchHourlyConditions();
+    } catch (error) {
+      console.error("TideIQ hourly forecast refresh failed.", error);
+    }
+  }
+
   try {
     const liveData = await getLiveTideData(tideIqData, selectedDate);
     let dailyForecast = null;
@@ -879,7 +912,7 @@ async function loadTideIqData() {
       updatedAt: liveData.isToday ? displayTime : `${displayTime} · NOAA prediction`,
       dailyForecast,
       forecastLoading: false,
-      hourlyConditions: buildCurrentHourlyConditions(liveData.hourlyConditions)
+      hourlyConditions
     });
   } catch (error) {
     console.error("TideIQ NOAA refresh failed; using mock fallback.", error);
@@ -889,7 +922,7 @@ async function loadTideIqData() {
       updatedAt: `${displayTime} fallback`,
       dailyForecast: null,
       forecastLoading: false,
-      hourlyConditions: buildCurrentHourlyConditions(tideIqData.hourlyConditions)
+      hourlyConditions
     });
   }
 }
@@ -902,7 +935,8 @@ function getFallbackTideIqData() {
     updatedAt: `${displayTime} loading`,
     dailyForecast: null,
     forecastLoading: false,
-    hourlyConditions: buildCurrentHourlyConditions(tideIqData.hourlyConditions)
+    hourlyConditions: [],
+    hourlyLoading: true
   });
 }
 
@@ -911,7 +945,7 @@ function render(data) {
     <div class="ambient" aria-hidden="true"></div>
     <div class="content-stack">
       ${TideDashboard(data)}
-      ${data.isToday ? HourlyConditionsBar({ hourlyConditions: data.hourlyConditions }) : DailyForecastPanel(data)}
+      ${data.isToday ? HourlyConditionsBar(data) : DailyForecastPanel(data)}
     </div>
   `;
 }
@@ -947,7 +981,8 @@ function selectDate(nextDate) {
     updatedAt: "Loading NOAA prediction",
     dailyForecast: null,
     forecastLoading: true,
-    hourlyConditions: buildCurrentHourlyConditions(tideIqData.hourlyConditions)
+    hourlyConditions: [],
+    hourlyLoading: true
   }));
   refreshDashboard();
 }
