@@ -98,7 +98,7 @@ function buildTimeTicks(chartStartDateTime) {
     const time = addMinutesToStationDateTime(chartStartDateTime, offset);
     return {
       offset,
-      label: index === 0 ? "Now" : formatStationDateTime(time)
+      label: formatStationDateTime(time)
     };
   });
 }
@@ -376,14 +376,14 @@ async function getLiveTideData(baseData, selectedDate) {
   const referenceHour = Math.floor(referenceMinutes / 60);
   const referenceMinute = referenceMinutes % 60;
   const referenceDateTime = `${selectedKey} ${String(referenceHour).padStart(2, "0")}:${String(referenceMinute).padStart(2, "0")}`;
-  const chartStartDateTime = isToday ? referenceDateTime : `${selectedKey} 00:00`;
+  const chartStartDateTime = `${selectedKey} 00:00`;
   const chartEndDateTime = addMinutesToStationDateTime(chartStartDateTime, DAY_END_MINUTES);
 
   const [curvePredictions, tideEvents] = await Promise.all([
     fetchNoaaPredictions({
       station: baseData.station.id,
       beginDate: selectedNoaaDate,
-      endDate: isToday ? followingNoaaDate : selectedNoaaDate,
+      endDate: followingNoaaDate,
       interval: "6"
     }),
     fetchNoaaPredictions({
@@ -862,10 +862,7 @@ function syncStationDate() {
 function withDateContext(data) {
   syncStationDate();
   const isToday = selectedDate === stationToday;
-  const stationNow = getStationDateParts();
-  const defaultChartStart = isToday
-    ? `${stationToday} ${String(stationNow.hour).padStart(2, "0")}:${String(stationNow.minute).padStart(2, "0")}`
-    : `${selectedDate} 00:00`;
+  const defaultChartStart = `${selectedDate} 00:00`;
   const chartStartDateTime = data.chartStartDateTime || defaultChartStart;
   const contextualData = {
     ...data,
