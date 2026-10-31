@@ -151,6 +151,11 @@
       line-height: 1.4;
     }
 
+    .auth-panel { margin: 0 0 16px; }
+    .auth-panel button { cursor: pointer; padding: 10px 14px; border: 0; border-radius: 6px; font: inherit; font-weight: 700; }
+    .auth-status { color: var(--muted); font-size: 13px; line-height: 1.4; }
+    [hidden] { display: none !important; }
+
     .species-list {
       display: grid;
       gap: 9px;
@@ -283,18 +288,24 @@
 
     <aside class="legend" aria-label="Species legend">
       <div class="legend-inner">
+        <section class="auth-panel" aria-label="Account">
+          <p class="auth-status" id="authStatus" role="status">Checking sign-in…</p>
+          <button id="signIn" type="button" hidden>Sign in with Apple</button>
+          <button id="signOut" type="button" hidden>Sign out</button>
+        </section>
         <section class="total-card">
           <p class="total-label">Total catches</p>
-          <strong class="total-number" id="totalCatches">0</strong>
+          <strong class="total-number" id="totalCatches">—</strong>
         </section>
         <h2>Species Legend</h2>
-        <p class="legend-copy">Total catches by species from the BiteIQ database.</p>
+        <p class="legend-copy">Your catches by species. Sign in with the same Apple account you use in BiteIQ.</p>
         <ul class="species-list" id="speciesList"></ul>
       </div>
     </aside>
   </main>
 
   <script src="https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/dist/umd/supabase.min.js"></script>
   <script>
     const config = {
       supabaseUrl: "https://gaasebboluctiyxskuif.supabase.co",
@@ -302,7 +313,22 @@
       catchesTable: "catches"
     };
 
-    window.setTimeout(() => window.location.reload(), 5 * 60 * 1000);
+    const client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+    const status = document.getElementById("authStatus");
+    const signIn = document.getElementById("signIn");
+    const signOut = document.getElementById("signOut");
+    let refreshGeneration = 0;
+
+    signIn.addEventListener("click", async () => {
+      const { error } = await client.auth.signInWithOAuth({
+        provider: "apple", options: { redirectTo: `${location.origin}/` }
+      });
+      if (error) status.textContent = `Sign-in failed: ${error.message}`;
+    });
+    signOut.addEventListener("click", async () => {
+      const { error } = await client.auth.signOut();
+      if (error) status.textContent = `Sign-out failed: ${error.message}`;
+    });
 
     const colorPalette = ["#b589ff", "#8be8f0", "#87f2c7", "#6ccff0", "#c9ff70", "#ffd36a", "#baf56a", "#ff9f68", "#ff7a90"];
     const prioritySpecies = ["Flounder", "Redfish", "Spotted Seatrout"];
@@ -336,16 +362,42 @@
     }
 
     async function loadCatches() {
-      const url = `${config.supabaseUrl}/rest/v1/${encodeURIComponent(config.catchesTable)}?select=id,timestamp,species,ai_species,ai_confidence,latitude,longitude,location&order=timestamp.desc`;
-      const response = await fetch(url, {
-        headers: {
-          apikey: config.supabaseAnonKey,
-          Authorization: `Bearer ${config.supabaseAnonKey}`
-        }
-      });
+      const rows = [];
+      const pageSize = 1000;
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error } = await client.from(config.catchesTable)
+          .select("id,timestamp,species,ai_species,latitude,longitude")
+          .order("timestamp", { ascending: false }).order("id")
+          .range(offset, offset + pageSize - 1);
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < pageSize) return rows;
+      }
+    }
 
-      if (!response.ok) throw new Error(`Supabase fetch failed: ${response.status}`);
-      return response.json();
+    async function refreshCatches(session) {
+      const generation = ++refreshGeneration;
+      signIn.hidden = !!session;
+      signOut.hidden = !session;
+      document.getElementById("totalCatches").textContent = "—";
+      document.getElementById("speciesList").replaceChildren();
+      map.getSource("catches").setData({ type: "FeatureCollection", features: [] });
+      if (!session) {
+        status.textContent = "Sign in to see your catches.";
+        return;
+      }
+      status.textContent = "Loading your catches…";
+      try {
+        const rows = await loadCatches();
+        if (generation !== refreshGeneration) return;
+        renderLegend(buildSpeciesRows(rows));
+        map.getSource("catches").setData({ type: "FeatureCollection", features: buildFeatures(rows) });
+        status.textContent = "Showing your catches.";
+      } catch (error) {
+        if (generation !== refreshGeneration) return;
+        console.error(error);
+        status.textContent = "Could not load catches. Please reload the page and try again.";
+      }
     }
 
     function getCoordinates(row) {
@@ -372,15 +424,23 @@
     function renderLegend(speciesRows) {
       const totalCatches = speciesRows.reduce((sum, item) => sum + item.catches, 0);
       document.getElementById("totalCatches").textContent = totalCatches.toLocaleString();
-      document.getElementById("speciesList").innerHTML = speciesRows.map((item) => `
-        <li class="species" style="--color: ${item.color}">
-          <span class="dot" aria-hidden="true"></span>
-          <span>
-            <strong>${item.name}</strong>
-            <span>${item.catches.toLocaleString()} catches</span>
-          </span>
-        </li>
-      `).join("");
+      const list = document.getElementById("speciesList");
+      list.replaceChildren(...speciesRows.map((item) => {
+        const row = document.createElement("li");
+        row.className = "species";
+        row.style.setProperty("--color", item.color);
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        dot.setAttribute("aria-hidden", "true");
+        const details = document.createElement("span");
+        const name = document.createElement("strong");
+        name.textContent = item.name;
+        const count = document.createElement("span");
+        count.textContent = `${item.catches.toLocaleString()} catches`;
+        details.append(name, count);
+        row.append(dot, details);
+        return row;
+      }));
     }
 
     function buildFeatures(rows) {
@@ -435,23 +495,13 @@
     map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 
     map.on("load", async () => {
-      let rows = [];
-      try {
-        rows = await loadCatches();
-      } catch (error) {
-        console.error(error);
-      }
-
-      const speciesRows = buildSpeciesRows(rows);
-      const features = buildFeatures(rows);
-      renderLegend(speciesRows);
-
       map.addSource("catches", {
         type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features
-        }
+        data: { type: "FeatureCollection", features: [] }
+      });
+      client.auth.onAuthStateChange((_event, session) => {
+        // Avoid calling Supabase APIs synchronously inside the auth callback.
+        setTimeout(() => refreshCatches(session), 0);
       });
 
       map.addLayer({
@@ -491,10 +541,11 @@
 
       map.on("click", "catch-circles", (event) => {
         const feature = event.features[0];
-        new maplibregl.Popup()
-          .setLngLat(feature.geometry.coordinates)
-          .setHTML(`<strong>${feature.properties.name}</strong><br>${Number(feature.properties.catches).toLocaleString()} catches in this cluster`)
-          .addTo(map);
+        const content = document.createElement("div");
+        const name = document.createElement("strong");
+        name.textContent = feature.properties.name;
+        content.append(name, document.createElement("br"), document.createTextNode(`${Number(feature.properties.catches).toLocaleString()} catches in this cluster`));
+        new maplibregl.Popup().setLngLat(feature.geometry.coordinates).setDOMContent(content).addTo(map);
       });
 
       map.on("mouseenter", "catch-circles", () => {
