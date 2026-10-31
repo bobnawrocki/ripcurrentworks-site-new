@@ -298,7 +298,7 @@
           <strong class="total-number" id="totalCatches">—</strong>
         </section>
         <h2>Species Legend</h2>
-        <p class="legend-copy">Your catches by species. Sign in with the same Apple account you use in BiteIQ.</p>
+        <p class="legend-copy" id="legendCopy">Sign in with the same Apple account you use in BiteIQ.</p>
         <ul class="species-list" id="speciesList"></ul>
       </div>
     </aside>
@@ -362,16 +362,26 @@
     }
 
     async function loadCatches() {
-      const rows = [];
       const pageSize = 1000;
+      let administrator = true;
+      let rows = [];
       for (let offset = 0; ; offset += pageSize) {
-        const { data, error } = await client.from(config.catchesTable)
-          .select("id,timestamp,species,ai_species,latitude,longitude")
-          .order("timestamp", { ascending: false }).order("id")
+        const query = administrator
+          ? client.rpc("admin_map_catches")
+          : client.from(config.catchesTable).select("id,timestamp,species,ai_species,latitude,longitude");
+        const { data, error } = await query.order("timestamp", { ascending: false }).order("id")
           .range(offset, offset + pageSize - 1);
-        if (error) throw error;
+        if (error) {
+          if (administrator && offset === 0 && error.code === "42501") {
+            administrator = false;
+            offset = -pageSize;
+            rows = [];
+            continue;
+          }
+          throw error;
+        }
         rows.push(...data);
-        if (data.length < pageSize) return rows;
+        if (data.length < pageSize) return { rows, administrator };
       }
     }
 
@@ -383,16 +393,18 @@
       document.getElementById("speciesList").replaceChildren();
       map.getSource("catches").setData({ type: "FeatureCollection", features: [] });
       if (!session) {
-        status.textContent = "Sign in to see your catches.";
+        status.textContent = "Sign in to see catches.";
+        document.getElementById("legendCopy").textContent = "Sign in with the same Apple account you use in BiteIQ.";
         return;
       }
       status.textContent = "Loading your catches…";
       try {
-        const rows = await loadCatches();
+        const { rows, administrator } = await loadCatches();
         if (generation !== refreshGeneration) return;
         renderLegend(buildSpeciesRows(rows));
         map.getSource("catches").setData({ type: "FeatureCollection", features: buildFeatures(rows) });
-        status.textContent = "Showing your catches.";
+        status.textContent = administrator ? "Administrator view: all catches." : "Showing your catches.";
+        document.getElementById("legendCopy").textContent = administrator ? "All catches by species, including private and unowned records." : "Your catches by species.";
       } catch (error) {
         if (generation !== refreshGeneration) return;
         console.error(error);
