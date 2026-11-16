@@ -89,6 +89,11 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (url.hostname === "tideiq.ripcurrentworks.com" && url.pathname === "/") {
+      url.pathname = "/tideiq/";
+      return Response.redirect(url, 302);
+    }
+
     if (url.hostname === "biteiq.ripcurrentworks.com") {
       const assetUrl = new URL(url);
       const legacyHeatMapPaths = new Set([
